@@ -29,6 +29,9 @@ importers:
       next-themes:
         specifier: ^0.4.4
         version: 0.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      prisma:
+        specifier: ^6.1.0
+        version: 6.1.0
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -102,9 +105,6 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.6.9
         version: 0.6.9(prettier@3.4.2)
-      prisma:
-        specifier: ^6.1.0
-        version: 6.1.0
       supabase:
         specifier: ^2.1.1
         version: 2.1.1
