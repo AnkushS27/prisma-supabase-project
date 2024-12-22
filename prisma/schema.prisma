@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  cohortName String   // Store the cohort name directly as a string
+  courses    String[] // Store the course names as an array of strings
+  last_login DateTime @default(now())
+  joined     DateTime @default(now())
+}
+
+model Cohort {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  startDate DateTime
+  endDate   DateTime
+}
+
+model Course {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  credits   Int
+}

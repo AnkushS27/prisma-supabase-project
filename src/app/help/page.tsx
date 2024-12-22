@@ -1,7 +1,7 @@
-export default function Home() {
+export default function Help() {
   return (
     <div className='flex items-center justify-center py-10 font-bold'>
-      Dashboard content goes here...
+      Help content goes here...
     </div>
   );
 }

@@ -1,14 +1,12 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Noto_Sans } from 'next/font/google';
 import './globals.css';
+import Sidebar from '@/components/sidebar';
+import Header from '@/components/header';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const notoSans = Noto_Sans({
+  variable: '--font-noto-sans',
+  weight: ['400', '700'],
   subsets: ['latin'],
 });
 
@@ -24,10 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={notoSans.className}>
+        <div className='flex h-screen bg-[#F6F8FA]'>
+          <Sidebar />
+          <div className='flex w-full flex-col p-4'>
+            <Header />
+            <main className='mt-4 h-full rounded-xl bg-white'>{children}</main>
+          </div>
+        </div>
       </body>
     </html>
   );
