@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/react';
 import { Noto_Sans } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/sidebar';
@@ -22,6 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
+      <Analytics />
       <body className={notoSans.className}>
         <div className='flex h-screen bg-[#F6F8FA]'>
           <Sidebar />
