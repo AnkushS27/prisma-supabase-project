@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   setStudents,
   addStudent,
+  removeStudent,
   setSelectedCohort,
   setSelectedCourse,
 } from '@/lib/features/studentsSlice';
@@ -65,6 +66,25 @@ const StudentsTable: React.FC = () => {
       setIsAddingStudent(false); // Close the form on success
     } catch (error) {
       console.error('Error adding student:', error);
+    }
+  };
+
+  const handleDeleteStudent = async (email: string) => {
+    if (!confirm('Are you sure you want to delete this student?')) {
+      return;
+    }
+
+    try {
+      // Send delete request to API
+      await axios.delete('/api/deleteStudent', {
+        data: { email },
+      });
+
+      // Update Redux state
+      dispatch(removeStudent(email));
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      alert('Failed to delete student. Please try again.');
     }
   };
 
@@ -207,6 +227,7 @@ const StudentsTable: React.FC = () => {
                 <th className='p-2'>Date Joined</th>
                 <th className='p-2'>Last Login</th>
                 <th className='p-2'>Status</th>
+                <th className='p-2'>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -251,6 +272,14 @@ const StudentsTable: React.FC = () => {
                           : 'inline-block h-4 w-4 rounded-full bg-red-500'
                       }
                     />
+                  </td>
+                  <td className='p-2'>
+                    <button
+                      onClick={() => handleDeleteStudent(student.email)}
+                      className='text-red-500 hover:underline'
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

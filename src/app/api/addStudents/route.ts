@@ -13,12 +13,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  console.log('Adding student:', body);
-  console.log('Courses:', courses);
-  console.log('cohortName:', cohortName);
-  console.log('Name:', name);
-  console.log('Email:', email);
-
   try {
     // Check if the cohortName exists, if not create it
     let cohortData = await prisma.cohort.findUnique({
@@ -26,7 +20,6 @@ export async function POST(req: NextRequest) {
     });
 
     if (!cohortData) {
-      console.log('Cohort not found. Creating cohort...');
       // Create the cohort if it doesn't exist
       cohortData = await prisma.cohort.create({
         data: {
@@ -37,34 +30,27 @@ export async function POST(req: NextRequest) {
           ),
         },
       });
-      console.log('Cohort created:', cohortData);
     }
 
     // Ensure courses exist or create them if they do not
-    const courseData = await Promise.all(
-      courses.map(async (courseName: string) => {
-        console.log(`Searching for course: ${courseName}`);
-        let course = await prisma.course.findUnique({
-          where: { name: courseName },
+    courses.map(async (courseName: string) => {
+      let course = await prisma.course.findUnique({
+        where: { name: courseName },
+      });
+
+      if (!course) {
+        console.error(`Course not found: ${courseName}. Creating course...`);
+        // Create the course if it doesn't exist
+        course = await prisma.course.create({
+          data: {
+            name: courseName,
+            credits: 3, // Default value, you can adjust this as needed
+          },
         });
+      }
 
-        if (!course) {
-          console.error(`Course not found: ${courseName}. Creating course...`);
-          // Create the course if it doesn't exist
-          course = await prisma.course.create({
-            data: {
-              name: courseName,
-              credits: 3, // Default value, you can adjust this as needed
-            },
-          });
-          console.log(`Course created: ${course}`);
-        }
-
-        return course;
-      })
-    );
-
-    console.log('Course data:', courseData);
+      return course;
+    });
 
     // Insert the student and directly store the course names
     const student = await prisma.student.create({

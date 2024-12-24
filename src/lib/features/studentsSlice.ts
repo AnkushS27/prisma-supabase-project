@@ -32,6 +32,11 @@ const studentsSlice = createSlice({
     addStudent(state, action: PayloadAction<Student>) {
       state.students.push(action.payload);
     },
+    removeStudent: (state, action: PayloadAction<string>) => {
+      state.students = state.students.filter(
+        (student) => student.email !== action.payload
+      );
+    },
     setSelectedCohort(state, action: PayloadAction<string | null>) {
       state.selectedCohort = action.payload;
     },
@@ -41,7 +46,12 @@ const studentsSlice = createSlice({
   },
 });
 
-export const { setStudents, addStudent, setSelectedCohort, setSelectedCourse } =
-  studentsSlice.actions;
+export const {
+  setStudents,
+  addStudent,
+  removeStudent,
+  setSelectedCohort,
+  setSelectedCourse,
+} = studentsSlice.actions;
 
 export default studentsSlice.reducer;
