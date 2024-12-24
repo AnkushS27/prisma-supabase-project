@@ -2,18 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import {
+  setStudents,
+  addStudent,
+  setSelectedCohort,
+  setSelectedCourse,
+} from '@/lib/features/studentsSlice';
 
-interface Student {
-  name: string;
-  email: string;
-  cohortName: string;
-  courses: string[]; // Updated to be an array of strings
-  joined?: string;
-  last_login?: string;
-  status?: string;
-}
-
-// This data could be fetched from an API or a database
 const COHORTS = ['AY 2024-25', 'AY 2025-26', 'AY 2026-27'];
 const COURSES = [
   'CBSE 9 Science',
@@ -25,48 +21,52 @@ const COURSES = [
 ];
 
 const StudentsTable: React.FC = () => {
-  const [students, setStudents] = useState<Student[]>([]);
+  const dispatch = useAppDispatch();
+  const { students, selectedCohort, selectedCourse } = useAppSelector(
+    (state) => state.students
+  );
+
   const [isAddingStudent, setIsAddingStudent] = useState(false);
-  const [selectedCohort, setSelectedCohort] = useState<string | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+
+  // Fetch students data when the component mounts
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await axios.get('/api/getStudents');
+        dispatch(setStudents(response.data)); // Update Redux state with fetched students
+      } catch (error) {
+        console.error('Error fetching students:', error);
+      }
+    };
+
+    fetchStudents();
+  }, [dispatch]);
 
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    // Collect the selected courses
     const selectedCourses = COURSES.filter((course) =>
       formData.getAll('courses').includes(course)
     );
 
-    const newStudent: Partial<Student> = {
+    const newStudent = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       cohortName: formData.get('cohort') as string,
-      courses: selectedCourses, // Store course names as strings
-      joined: new Date().toISOString(), // Set the current date for "joined"
-      last_login: new Date().toISOString(), // Set the current date for "last_login"
+      courses: selectedCourses,
+      joined: new Date().toISOString(),
+      last_login: new Date().toISOString(),
     };
 
     try {
-      const response = await axios.post('/api/addStudents', newStudent);
-      setStudents((prev) => [
-        ...prev,
-        { ...newStudent, courses: selectedCourses } as Student,
-      ]);
-      setIsAddingStudent(false);
-      console.log('Response:', response);
+      await axios.post('/api/addStudents', newStudent);
+      dispatch(addStudent(newStudent)); // Update Redux state with the new student
+      setIsAddingStudent(false); // Close the form on success
     } catch (error) {
       console.error('Error adding student:', error);
     }
   };
-
-  useEffect(() => {
-    axios.get('/api/getStudents').then((response) => {
-      console.log('Response:', response);
-      setStudents(response.data);
-    });
-  }, []);
 
   const filteredStudents = students.filter((student) => {
     const matchesCohort = selectedCohort
@@ -169,7 +169,7 @@ const StudentsTable: React.FC = () => {
             <div>
               <select
                 className='cursor-pointer rounded-md border bg-[#E9EDF1] p-2 font-semibold text-[#3F526E]'
-                onChange={(e) => setSelectedCohort(e.target.value)}
+                onChange={(e) => dispatch(setSelectedCohort(e.target.value))}
               >
                 <option value=''>All Cohorts</option>
                 {COHORTS.map((cohort) => (
@@ -180,7 +180,7 @@ const StudentsTable: React.FC = () => {
               </select>
               <select
                 className='ml-2 cursor-pointer rounded-md border bg-[#E9EDF1] p-2 font-semibold text-[#3F526E]'
-                onChange={(e) => setSelectedCourse(e.target.value)}
+                onChange={(e) => dispatch(setSelectedCourse(e.target.value))}
               >
                 <option value=''>All Courses</option>
                 {COURSES.map((course) => (

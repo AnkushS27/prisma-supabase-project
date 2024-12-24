@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { setActiveItem } from '@/lib/features/sidebarSlice';
 
 const Sidebar = () => {
   const router = useRouter();
-  const pathname = usePathname();
-  const [activeItem, setActiveItem] = useState(pathname);
+  const dispatch = useAppDispatch();
+  const activeItem = useAppSelector((state) => state.sidebar.activeItem);
 
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: '/icons/dashboard-icon.svg' },
@@ -23,14 +24,14 @@ const Sidebar = () => {
   ];
 
   const handleNavigation = (path: string) => {
-    setActiveItem(path);
+    dispatch(setActiveItem(path));
     router.push(path);
   };
 
   return (
     <nav className='relative h-screen w-80 bg-white'>
       <div className='fixed flex w-64 flex-col gap-6 p-4'>
-        <Image src='/logo.svg' alt='logo' width={120} height={90} />
+        <Image src='/logo.svg' alt='logo' priority width={120} height={90} />
         <ul className='space-y-4'>
           {menuItems.map((item, index) => (
             <li

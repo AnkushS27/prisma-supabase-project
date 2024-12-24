@@ -4,6 +4,7 @@ import { Noto_Sans } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/sidebar';
 import Header from '@/components/header';
+import StoreProvider from './StoreProvider';
 
 const notoSans = Noto_Sans({
   variable: '--font-noto-sans',
@@ -25,13 +26,17 @@ export default function RootLayout({
     <html lang='en'>
       <Analytics />
       <body className={notoSans.className}>
-        <div className='flex h-screen bg-[#F6F8FA]'>
-          <Sidebar />
-          <div className='flex w-full flex-col p-4'>
-            <Header />
-            <main className='mt-4 h-full rounded-xl bg-white'>{children}</main>
+        <StoreProvider>
+          <div className='flex h-screen bg-[#F6F8FA]'>
+            <Sidebar />
+            <div className='flex w-full flex-col p-4'>
+              <Header />
+              <main className='mt-4 h-full rounded-xl bg-white'>
+                {children}
+              </main>
+            </div>
           </div>
-        </div>
+        </StoreProvider>
       </body>
     </html>
   );
